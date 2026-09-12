@@ -1,0 +1,12 @@
+{
+  "name": "ai-reliability-command-center",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Recruiter-facing AI production reliability, incident response, RAG diagnostics and release-readiness studio deployed on Railway",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
