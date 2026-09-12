@@ -6,82 +6,18 @@ const PORT = Number(process.env.PORT || 8080);
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
 const incidents = {
-  'hallucination-spike': {
-    name: 'Hallucination Spike', severity: 'SEV-1', domain: 'LLM Quality',
-    summary: 'Groundedness drops while answer confidence remains high.',
-    probableCause: 'Prompt/context regression reduced evidence anchoring and citation discipline.',
-    evidence: ['Groundedness 0.93 → 0.71', 'Unsupported claims +18.4%', 'Citation coverage -21%', 'No matching API error spike'],
-    blastRadius: 'High-risk for customer-facing answers and regulated workflows.',
-    remediation: ['Freeze current prompt release', 'Restore previous evidence-first prompt', 'Run groundedness regression suite', 'Require citation coverage gate ≥ 0.90'],
-    rollback: 'Recommended — revert prompt/config to previous known-good release.',
-    decision: 'FAIL'
-  },
-  'rag-retrieval-degradation': {
-    name: 'RAG Retrieval Degradation', severity: 'SEV-2', domain: 'RAG',
-    summary: 'Retrieval relevance deteriorates even though generation latency is healthy.',
-    probableCause: 'Chunking/index drift or embedding mismatch reduced retrieval precision.',
-    evidence: ['Recall@5 0.91 → 0.73', 'MRR -17%', 'Context utilization -14%', 'Generation latency stable'],
-    blastRadius: 'Medium-to-high impact for knowledge-intensive journeys.',
-    remediation: ['Validate embedding/index versions', 'Compare top-k retrieval before/after release', 'Re-index affected corpus', 'Add golden-query retrieval gate'],
-    rollback: 'Conditional — rollback index/embedding release if corpus validation fails.',
-    decision: 'WARN'
-  },
-  'agent-tool-timeout': {
-    name: 'Agent Tool Timeout', severity: 'SEV-2', domain: 'Agentic AI',
-    summary: 'Agent plans correctly but stalls during downstream tool execution.',
-    probableCause: 'External tool latency exceeds orchestration timeout and retry budget.',
-    evidence: ['Tool P95 2.1s → 8.7s', 'Retry exhaustion 12.8%', 'Planner success 98%', 'Final task success 76%'],
-    blastRadius: 'Medium impact; workflows using the affected tool fail or partially complete.',
-    remediation: ['Introduce timeout budget per tool', 'Add bounded exponential retry', 'Implement fallback path', 'Expose partial-result state to users'],
-    rollback: 'Not required if dependency recovers; isolate tool and degrade gracefully.',
-    decision: 'WARN'
-  },
-  'prompt-regression': {
-    name: 'Prompt Release Regression', severity: 'SEV-1', domain: 'PromptOps',
-    summary: 'A prompt release improves verbosity but reduces task completion and structured output validity.',
-    probableCause: 'Instruction ordering changed model behavior and weakened output constraints.',
-    evidence: ['Task success 94% → 81%', 'JSON validity 99% → 87%', 'Token usage +24%', 'Latency +11%'],
-    blastRadius: 'High across all flows using the shared prompt version.',
-    remediation: ['Disable prompt version', 'Diff instruction ordering', 'Run golden dataset evaluation', 'Canary revised prompt before rollout'],
-    rollback: 'Recommended immediately.',
-    decision: 'FAIL'
-  },
-  'rate-limit-storm': {
-    name: 'Provider Rate-Limit Storm', severity: 'SEV-1', domain: 'Runtime/API',
-    summary: '429 responses surge during traffic peaks, causing retries and queue growth.',
-    probableCause: 'Concurrency exceeds provider quota and retry policy amplifies load.',
-    evidence: ['429 rate 0.4% → 13.2%', 'Queue depth +6.4x', 'P95 latency 1.4s → 6.9s', 'Retry traffic +31%'],
-    blastRadius: 'High during peak traffic across generation-dependent journeys.',
-    remediation: ['Apply concurrency limiter', 'Use jittered backoff', 'Prioritize critical traffic', 'Enable model/provider fallback'],
-    rollback: 'Rollback traffic/config changes if a recent rollout increased concurrency.',
-    decision: 'FAIL'
-  },
-  'latency-regression': {
-    name: 'Latency Regression', severity: 'SEV-2', domain: 'Performance',
-    summary: 'End-to-end P95 latency breaches the production SLO without corresponding error-rate growth.',
-    probableCause: 'Longer contexts and extra orchestration steps increased inference and tool-chain time.',
-    evidence: ['P95 1.7s → 4.8s', 'Error rate remains <1%', 'Input tokens +42%', 'Agent steps 4.1 → 6.8 avg'],
-    blastRadius: 'Medium; experience degrades and timeout risk increases.',
-    remediation: ['Cap retrieved context', 'Parallelize independent tool calls', 'Route simple tasks to faster path', 'Set latency budget per stage'],
-    rollback: 'Conditional on SLO severity and business impact.',
-    decision: 'WARN'
-  }
+  'hallucination-spike': { name: 'Hallucination Spike', severity: 'SEV-1', domain: 'LLM Quality', summary: 'Groundedness drops while answer confidence remains high.', probableCause: 'Prompt/context regression reduced evidence anchoring and citation discipline.', evidence: ['Groundedness 0.93 → 0.71', 'Unsupported claims +18.4%', 'Citation coverage -21%', 'No matching API error spike'], blastRadius: 'High-risk for customer-facing answers and regulated workflows.', remediation: ['Freeze current prompt release', 'Restore previous evidence-first prompt', 'Run groundedness regression suite', 'Require citation coverage gate ≥ 0.90'], rollback: 'Recommended — revert prompt/config to previous known-good release.', decision: 'FAIL' },
+  'rag-retrieval-degradation': { name: 'RAG Retrieval Degradation', severity: 'SEV-2', domain: 'RAG', summary: 'Retrieval relevance deteriorates even though generation latency is healthy.', probableCause: 'Chunking/index drift or embedding mismatch reduced retrieval precision.', evidence: ['Recall@5 0.91 → 0.73', 'MRR -17%', 'Context utilization -14%', 'Generation latency stable'], blastRadius: 'Medium-to-high impact for knowledge-intensive journeys.', remediation: ['Validate embedding/index versions', 'Compare top-k retrieval before/after release', 'Re-index affected corpus', 'Add golden-query retrieval gate'], rollback: 'Conditional — rollback index/embedding release if corpus validation fails.', decision: 'WARN' },
+  'agent-tool-timeout': { name: 'Agent Tool Timeout', severity: 'SEV-2', domain: 'Agentic AI', summary: 'Agent plans correctly but stalls during downstream tool execution.', probableCause: 'External tool latency exceeds orchestration timeout and retry budget.', evidence: ['Tool P95 2.1s → 8.7s', 'Retry exhaustion 12.8%', 'Planner success 98%', 'Final task success 76%'], blastRadius: 'Medium impact; workflows using the affected tool fail or partially complete.', remediation: ['Introduce timeout budget per tool', 'Add bounded exponential retry', 'Implement fallback path', 'Expose partial-result state to users'], rollback: 'Not required if dependency recovers; isolate tool and degrade gracefully.', decision: 'WARN' },
+  'prompt-regression': { name: 'Prompt Release Regression', severity: 'SEV-1', domain: 'PromptOps', summary: 'A prompt release improves verbosity but reduces task completion and structured output validity.', probableCause: 'Instruction ordering changed model behavior and weakened output constraints.', evidence: ['Task success 94% → 81%', 'JSON validity 99% → 87%', 'Token usage +24%', 'Latency +11%'], blastRadius: 'High across all flows using the shared prompt version.', remediation: ['Disable prompt version', 'Diff instruction ordering', 'Run golden dataset evaluation', 'Canary revised prompt before rollout'], rollback: 'Recommended immediately.', decision: 'FAIL' },
+  'rate-limit-storm': { name: 'Provider Rate-Limit Storm', severity: 'SEV-1', domain: 'Runtime/API', summary: '429 responses surge during traffic peaks, causing retries and queue growth.', probableCause: 'Concurrency exceeds provider quota and retry policy amplifies load.', evidence: ['429 rate 0.4% → 13.2%', 'Queue depth +6.4x', 'P95 latency 1.4s → 6.9s', 'Retry traffic +31%'], blastRadius: 'High during peak traffic across generation-dependent journeys.', remediation: ['Apply concurrency limiter', 'Use jittered backoff', 'Prioritize critical traffic', 'Enable model/provider fallback'], rollback: 'Rollback traffic/config changes if a recent rollout increased concurrency.', decision: 'FAIL' },
+  'latency-regression': { name: 'Latency Regression', severity: 'SEV-2', domain: 'Performance', summary: 'End-to-end P95 latency breaches the production SLO without corresponding error-rate growth.', probableCause: 'Longer contexts and extra orchestration steps increased inference and tool-chain time.', evidence: ['P95 1.7s → 4.8s', 'Error rate remains <1%', 'Input tokens +42%', 'Agent steps 4.1 → 6.8 avg'], blastRadius: 'Medium; experience degrades and timeout risk increases.', remediation: ['Cap retrieved context', 'Parallelize independent tool calls', 'Route simple tasks to faster path', 'Set latency budget per stage'], rollback: 'Conditional on SLO severity and business impact.', decision: 'WARN' }
 };
 
 function metrics() {
   const t = Date.now() / 10000;
   const wave = (min, max, shift = 0) => min + ((Math.sin(t + shift) + 1) / 2) * (max - min);
-  return {
-    timestamp: new Date().toISOString(),
-    availability: Number(wave(99.91, 99.99, 0.2).toFixed(2)),
-    taskSuccess: Number(wave(93.4, 97.8, 1.3).toFixed(1)),
-    groundedness: Number(wave(0.89, 0.96, 2.1).toFixed(2)),
-    p95Latency: Number(wave(1.4, 2.4, 3.2).toFixed(2)),
-    errorRate: Number(wave(0.25, 0.92, 4.1).toFixed(2)),
-    retrievalQuality: Number(wave(0.86, 0.94, 5.3).toFixed(2)),
-    toolSuccess: Number(wave(96.1, 99.2, 6.2).toFixed(1)),
-    tokenIndex: Math.round(wave(72, 89, 0.8))
-  };
+  return { timestamp: new Date().toISOString(), availability: Number(wave(99.91, 99.99, 0.2).toFixed(2)), taskSuccess: Number(wave(93.4, 97.8, 1.3).toFixed(1)), groundedness: Number(wave(0.89, 0.96, 2.1).toFixed(2)), p95Latency: Number(wave(1.4, 2.4, 3.2).toFixed(2)), errorRate: Number(wave(0.25, 0.92, 4.1).toFixed(2)), retrievalQuality: Number(wave(0.86, 0.94, 5.3).toFixed(2)), toolSuccess: Number(wave(96.1, 99.2, 6.2).toFixed(1)), tokenIndex: Math.round(wave(72, 89, 0.8)) };
 }
 
 function trace() {
@@ -103,16 +39,13 @@ function sendJson(res, status, body) {
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
-    req.on('data', chunk => {
-      body += chunk;
-      if (body.length > 1_000_000) reject(new Error('Payload too large'));
-    });
-    req.on('end', () => {
-      try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error('Invalid JSON')); }
-    });
+    req.on('data', chunk => { body += chunk; if (body.length > 1_000_000) reject(new Error('Payload too large')); });
+    req.on('end', () => { try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error('Invalid JSON')); } });
     req.on('error', reject);
   });
 }
+
+const provenanceBanner = `<div data-provenance="true" role="note" aria-label="Data provenance" style="display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;padding:7px 14px;background:#fff;border-bottom:1px solid #e2e8f0;color:#475569;font:600 10px/1.45 ui-sans-serif,system-ui;text-align:center"><span style="padding:4px 7px;border-radius:999px;border:1px solid #047857;background:#ecfdf5;color:#047857;font-weight:800">LIVE</span><span style="padding:4px 7px;border-radius:999px;border:1px solid #1d4ed8;background:#eff6ff;color:#1d4ed8;font-weight:800">SIMULATED</span><span style="padding:4px 7px;border-radius:999px;border:1px solid #9a3412;background:#fff7ed;color:#9a3412;font-weight:800">DEMO</span><span>LIVE = deployed runtime only · SIMULATED = generated telemetry, incidents, traces and release decisions · DEMO = representative scenarios</span></div>`;
 
 function staticFile(req, res) {
   const requestPath = new URL(req.url, `http://${req.headers.host || 'localhost'}`).pathname;
@@ -122,41 +55,31 @@ function staticFile(req, res) {
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return false;
   const ext = path.extname(file).toLowerCase();
   const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.svg': 'image/svg+xml' };
-  res.writeHead(200, { 'Content-Type': types[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=300' });
+  if (ext === '.html') {
+    const html = fs.readFileSync(file, 'utf8').replace(/<body([^>]*)>/i, `<body$1>${provenanceBanner}`);
+    res.writeHead(200, { 'Content-Type': types[ext], 'Cache-Control': 'no-cache' });
+    res.end(html);
+    return true;
+  }
+  res.writeHead(200, { 'Content-Type': types[ext] || 'application/octet-stream', 'Cache-Control': 'public, max-age=300' });
   fs.createReadStream(file).pipe(res);
   return true;
 }
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-
-  if (req.method === 'GET' && url.pathname === '/health') {
-    return sendJson(res, 200, { status: 'ok', service: 'ai-reliability-command-center', version: '1.0.0', runtime: 'railway', timestamp: new Date().toISOString() });
-  }
-  if (req.method === 'GET' && url.pathname === '/api/metrics') return sendJson(res, 200, metrics());
-  if (req.method === 'GET' && url.pathname === '/api/incidents') {
-    return sendJson(res, 200, Object.entries(incidents).map(([id, x]) => ({ id, name: x.name, severity: x.severity, domain: x.domain, summary: x.summary })));
-  }
-  if (req.method === 'GET' && url.pathname === '/api/agent-trace') return sendJson(res, 200, { trace: trace() });
-  if (req.method === 'GET' && url.pathname === '/api/architecture') {
-    return sendJson(res, 200, { layers: ['Experience', 'API Gateway', 'Agent / RAG Runtime', 'Model & Tool Providers', 'Quality & Evals', 'Observability', 'Release Governance', 'Railway Runtime'] });
-  }
+  if (req.method === 'GET' && url.pathname === '/health') return sendJson(res, 200, { status: 'ok', service: 'ai-reliability-command-center', version: '1.0.0', runtime: 'railway', provenance: 'LIVE', timestamp: new Date().toISOString() });
+  if (req.method === 'GET' && url.pathname === '/api/metrics') return sendJson(res, 200, { provenance: 'SIMULATED', ...metrics() });
+  if (req.method === 'GET' && url.pathname === '/api/incidents') return sendJson(res, 200, { provenance: 'DEMO', incidents: Object.entries(incidents).map(([id, x]) => ({ id, name: x.name, severity: x.severity, domain: x.domain, summary: x.summary })) });
+  if (req.method === 'GET' && url.pathname === '/api/agent-trace') return sendJson(res, 200, { provenance: 'SIMULATED', trace: trace() });
+  if (req.method === 'GET' && url.pathname === '/api/architecture') return sendJson(res, 200, { provenance: 'DEMO', layers: ['Experience', 'API Gateway', 'Agent / RAG Runtime', 'Model & Tool Providers', 'Quality & Evals', 'Observability', 'Release Governance', 'Railway Runtime'] });
   if (req.method === 'POST' && url.pathname === '/api/incidents/simulate') {
     try {
       const body = await readBody(req);
       const id = body.type && incidents[body.type] ? body.type : 'hallucination-spike';
       const item = incidents[id];
       const m = metrics();
-      return sendJson(res, 200, {
-        incidentId: `INC-${new Date().toISOString().slice(0,10).replaceAll('-', '')}-${String(Math.floor(Date.now() / 1000)).slice(-5)}`,
-        generatedAt: new Date().toISOString(), environment: body.environment || 'production', traffic: body.traffic || 'Normal',
-        ...item,
-        healthSignals: m,
-        rootCauseConfidence: id === 'agent-tool-timeout' ? 0.93 : 0.89,
-        releaseGate: item.decision,
-        owner: 'AI Reliability / Forward Deployed Engineering',
-        nextValidation: item.decision === 'FAIL' ? 'Run targeted regression + canary before re-release.' : 'Validate remediation under synthetic load before broad rollout.'
-      });
+      return sendJson(res, 200, { provenance: 'SIMULATED', incidentId: `INC-${new Date().toISOString().slice(0,10).replaceAll('-', '')}-${String(Math.floor(Date.now() / 1000)).slice(-5)}`, generatedAt: new Date().toISOString(), environment: body.environment || 'production', traffic: body.traffic || 'Normal', ...item, healthSignals: m, rootCauseConfidence: id === 'agent-tool-timeout' ? 0.93 : 0.89, releaseGate: item.decision, owner: 'AI Reliability / Forward Deployed Engineering', nextValidation: item.decision === 'FAIL' ? 'Run targeted regression + canary before re-release.' : 'Validate remediation under synthetic load before broad rollout.' });
     } catch (error) { return sendJson(res, 400, { error: error.message }); }
   }
   if (req.method === 'POST' && url.pathname === '/api/release/evaluate') {
@@ -171,15 +94,11 @@ const server = http.createServer(async (req, res) => {
       if (m.p95Latency > 4) warnings.push('P95 latency above 4s');
       if (m.retrievalQuality < 0.82) warnings.push('Retrieval quality below 0.82');
       const decision = failures.length ? 'FAIL' : warnings.length ? 'WARN' : 'PASS';
-      return sendJson(res, 200, { decision, failures, warnings, evaluatedAt: new Date().toISOString(), metrics: m });
+      return sendJson(res, 200, { provenance: 'SIMULATED', decision, failures, warnings, evaluatedAt: new Date().toISOString(), metrics: m });
     } catch (error) { return sendJson(res, 400, { error: error.message }); }
   }
-
   if (req.method === 'GET' && staticFile(req, res)) return;
-  if (req.method === 'GET') {
-    req.url = '/index.html';
-    if (staticFile(req, res)) return;
-  }
+  if (req.method === 'GET') { req.url = '/index.html'; if (staticFile(req, res)) return; }
   sendJson(res, 404, { error: 'Not found' });
 });
 
