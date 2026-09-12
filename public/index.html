@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="AI Reliability Command Center — Railway Edition by Ashok Kumar Manohar. Production AI observability, incident response, RAG diagnostics, agent traces and release readiness." />
+  <title>AI Reliability Command Center — Railway Edition</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-wrap"><div class="logo">ARC</div><div><div class="brand">AI Reliability Command Center</div><div class="subbrand">Railway Edition</div></div></div>
+    <nav><a href="#overview">Overview</a><a href="#incidents">Incidents</a><a href="#trace">Agent Trace</a><a href="#release">Release Gate</a><a href="/health" target="_blank" rel="noreferrer">Health API</a></nav>
+    <a class="github" href="https://github.com/ashokmanohar-ai" target="_blank" rel="noreferrer">GitHub ↗</a>
+  </header>
+
+  <main>
+    <section class="hero" id="overview">
+      <div class="hero-copy">
+        <span class="eyebrow">AI PRODUCTION RELIABILITY · FORWARD DEPLOYED ENGINEERING</span>
+        <h1>Operate AI systems with <span>evidence, control and recovery.</span></h1>
+        <p>A production-readiness studio for diagnosing model, RAG, agent, API and performance failures. Simulate incidents, inspect traces, generate RCA actions and make measurable release decisions.</p>
+        <div class="hero-actions"><a class="primary" href="#incidents">Simulate an incident</a><a class="secondary" href="#architecture">Explore architecture</a></div>
+        <div class="trust-row"><span>● Live on Railway</span><span>Zero API keys</span><span>Production health probe</span><span>Deterministic eval gates</span></div>
+      </div>
+      <aside class="signal-panel">
+        <div class="panel-head"><span>Production Signal</span><span class="pill green">Operational</span></div>
+        <div class="signal-grid">
+          <div><small>Availability</small><strong id="availability">99.96%</strong><span>SLO ≥ 99.9%</span></div>
+          <div><small>Task success</small><strong id="taskSuccess">96.2%</strong><span>Target ≥ 94%</span></div>
+          <div><small>Groundedness</small><strong id="groundedness">0.93</strong><span>Target ≥ 0.90</span></div>
+          <div><small>P95 latency</small><strong id="p95Latency">1.82s</strong><span>Budget ≤ 2.5s</span></div>
+        </div>
+        <div class="sparkbar"><span style="height:42%"></span><span style="height:66%"></span><span style="height:54%"></span><span style="height:79%"></span><span style="height:60%"></span><span style="height:88%"></span><span style="height:72%"></span><span style="height:91%"></span><span style="height:68%"></span><span style="height:84%"></span><span style="height:74%"></span><span style="height:94%"></span></div>
+      </aside>
+    </section>
+
+    <section class="section metrics-section">
+      <div class="metric-strip">
+        <div><span>Error rate</span><b id="errorRate">0.42%</b><small>API + runtime</small></div>
+        <div><span>Retrieval quality</span><b id="retrievalQuality">0.91</b><small>RAG relevance</small></div>
+        <div><span>Tool success</span><b id="toolSuccess">98.4%</b><small>Agent actions</small></div>
+        <div><span>Token efficiency</span><b id="tokenIndex">84</b><small>Efficiency index</small></div>
+      </div>
+    </section>
+
+    <section class="section" id="incidents">
+      <div class="section-heading"><span class="eyebrow">INCIDENT SIMULATOR</span><h2>Break the AI system safely. Diagnose it like production.</h2><p>Select a failure mode and generate an evidence-led root-cause analysis, blast radius, remediation plan and release decision.</p></div>
+      <div class="incident-layout">
+        <div class="scenario-grid" id="scenarioGrid">
+          <button class="scenario active" data-type="hallucination-spike"><span class="severity sev1">SEV-1</span><h3>Hallucination Spike</h3><p>Groundedness drops while confidence remains high.</p><small>LLM Quality</small></button>
+          <button class="scenario" data-type="rag-retrieval-degradation"><span class="severity sev2">SEV-2</span><h3>RAG Retrieval Degradation</h3><p>Relevant context disappears from top-k retrieval.</p><small>RAG</small></button>
+          <button class="scenario" data-type="agent-tool-timeout"><span class="severity sev2">SEV-2</span><h3>Agent Tool Timeout</h3><p>Planning succeeds; a downstream tool stalls.</p><small>Agentic AI</small></button>
+          <button class="scenario" data-type="prompt-regression"><span class="severity sev1">SEV-1</span><h3>Prompt Regression</h3><p>New prompt reduces task success and JSON validity.</p><small>PromptOps</small></button>
+          <button class="scenario" data-type="rate-limit-storm"><span class="severity sev1">SEV-1</span><h3>429 Rate-Limit Storm</h3><p>Retries amplify provider quota pressure.</p><small>Runtime/API</small></button>
+          <button class="scenario" data-type="latency-regression"><span class="severity sev2">SEV-2</span><h3>Latency Regression</h3><p>P95 breaches SLO while errors remain low.</p><small>Performance</small></button>
+        </div>
+
+        <div class="card simulator-card">
+          <div class="sim-toolbar"><label>Environment<select id="environment"><option>production</option><option>staging</option></select></label><label>Traffic<select id="traffic"><option>Normal</option><option>Peak</option><option>Canary 10%</option></select></label></div>
+          <button id="simulateBtn" class="primary button">Run incident analysis</button>
+          <div id="analysis" class="analysis empty"><div class="analysis-icon">◎</div><h3>Awaiting incident</h3><p>Choose a scenario and run the analysis to generate RCA evidence and recovery actions.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section light" id="trace">
+      <div class="section-heading narrow"><span class="eyebrow">AGENT TRACE EXPLORER</span><h2>See exactly where an agent workflow degraded.</h2><p>Trace planning, retrieval, tools, recovery policy and final response with evidence at each step.</p></div>
+      <div class="trace-shell card"><div class="trace-head"><div><b>Trace AGT-84721</b><span>Customer action workflow</span></div><span class="pill amber">Degraded · recovered</span></div><div id="traceList" class="trace-list"></div></div>
+    </section>
+
+    <section class="section" id="release">
+      <div class="section-heading narrow"><span class="eyebrow">RELEASE READINESS</span><h2>Ship only when quality and runtime signals agree.</h2></div>
+      <div class="release-grid">
+        <div class="card release-card"><div class="release-score"><span>Current release</span><b>92</b><small>/100 readiness</small></div><div class="gate-row"><span>Functional regression</span><b class="pass">PASS</b></div><div class="gate-row"><span>Groundedness / hallucination</span><b class="pass">PASS</b></div><div class="gate-row"><span>Retrieval relevance</span><b class="pass">PASS</b></div><div class="gate-row"><span>Agent tool reliability</span><b class="warn">WARN</b></div><div class="gate-row"><span>P95 latency</span><b class="pass">PASS</b></div><div class="gate-row"><span>Rollback readiness</span><b class="pass">PASS</b></div></div>
+        <div class="card decision-card"><span class="eyebrow">DECISION ENGINE</span><h3>PASS with monitored rollout</h3><p>Current quality signals meet release thresholds. Agent-tool reliability is near the warning boundary, so keep canary traffic and dependency monitoring enabled.</p><div class="decision-actions"><span>Canary 10%</span><span>Error budget protected</span><span>Rollback ready</span></div><button id="evaluateBtn" class="secondary button">Re-evaluate live metrics</button><div id="releaseDecision" class="mini-result">No blocking release gates detected.</div></div>
+      </div>
+    </section>
+
+    <section class="section architecture" id="architecture">
+      <div class="section-heading narrow"><span class="eyebrow">PRODUCTION ARCHITECTURE</span><h2>Reliability is a system, not a dashboard.</h2></div>
+      <div class="pipeline">
+        <div><b>Experience</b><span>Web / API / Agent</span></div><i>→</i><div><b>Orchestration</b><span>Planner + Tools</span></div><i>→</i><div><b>Context</b><span>RAG + Enterprise Data</span></div><i>→</i><div><b>Models</b><span>LLM Providers</span></div><i>→</i><div><b>Quality</b><span>Evals + Regression</span></div><i>→</i><div><b>Observability</b><span>Signals + Traces</span></div><i>→</i><div><b>Runtime</b><span>Railway</span></div>
+      </div>
+      <div class="capability-grid"><article><span>01</span><h3>Detect</h3><p>Monitor task success, groundedness, retrieval, latency, errors and tool outcomes.</p></article><article><span>02</span><h3>Diagnose</h3><p>Correlate traces and evaluation signals into evidence-led root cause hypotheses.</p></article><article><span>03</span><h3>Recover</h3><p>Rollback, degrade gracefully, isolate dependencies and validate remediation.</p></article><article><span>04</span><h3>Prevent</h3><p>Convert incidents into regression suites, thresholds, canaries and governance gates.</p></article></div>
+    </section>
+  </main>
+
+  <footer><div><strong>Ashok Kumar Manohar</strong><span>Test Architect · AI Quality Engineer · Forward Deployed AI Engineer</span></div><div>AI Reliability Command Center — Railway Edition</div></footer>
+  <script src="/app.js"></script>
+</body>
+</html>
